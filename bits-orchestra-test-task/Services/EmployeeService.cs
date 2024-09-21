@@ -13,6 +13,12 @@ namespace bits_orchestra_test_task.Services
             await _context.SaveChangesAsync();
         }
 
+        public async Task DeleteEmployeeAsync(int id)
+        {
+            _context.Employees.Remove(GetEmployeeById(id)!);
+            await _context.SaveChangesAsync();
+        }
+
         public List<Employee> GetAllEmployees()
         {
             return _context.Employees.ToList();

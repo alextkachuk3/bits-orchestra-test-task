@@ -20,3 +20,12 @@ html {
 body {
   margin-bottom: 60px;
 }
+
+.img-col {
+    width: 40px;
+}
+
+.table-icon {
+    width: 32px;
+    height: 32px;
+}

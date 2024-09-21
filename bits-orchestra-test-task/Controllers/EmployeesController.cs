@@ -101,6 +101,19 @@ namespace bits_orchestra_test_task.Controllers
             return Ok();
         }
 
+        [HttpPost]
+        public async Task<IActionResult> DeleteEmployee(int id)
+        {
+            var employee = _employeeService.GetEmployeeById(id);
+            if (employee == null)
+            {
+                return NotFound();
+            }
+
+            await _employeeService.DeleteEmployeeAsync(id);
+            return Ok();
+        }
+
         private static DateOnly ParseDateOfBirth(string value)
         {
             if (DateOnly.TryParse(value, CultureInfo.InvariantCulture, DateTimeStyles.None, out var dob))

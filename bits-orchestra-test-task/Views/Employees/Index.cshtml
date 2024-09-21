@@ -20,6 +20,7 @@
                         <th class="col-1">Married</th>
                         <th class="col-2">Phone</th>
                         <th class="col-2">Salary</th>
+                        <th class="col-1"></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -41,6 +42,9 @@
                             <td class="col-2">
                                 <input type="number" class="form-control" id="employeeSalary-@employee.Id" data-id="@employee.Id" value="@employee.Salary" />
                             </td>
+                            <td class="col-1">
+                                <button class="btn btn-danger btn-sm rounded-0" type="button" title="Delete"><img class="table-icon" src="~/trash.png" /></button>
+                            </td>
                         </tr>
                     }
                 </tbody>
@@ -49,7 +53,7 @@
     }
 </div>
 
-@section Scripts {   
+@section Scripts {
     <script>
         $(document).ready(function () {
             $('input').on('change', function () {
@@ -78,6 +82,23 @@
                     error: function (xhr, status, error) {
                         console.error('Error occurred: ' + error);
                         alert('Error updating employee.');
+                    }
+                });
+            });
+
+            $('.btn-danger').on('click', function () {
+                var employeeId = $(this).closest('tr').find('input').data('id');
+                var row = $(this).closest('tr');
+
+                $.ajax({
+                    url: '/Employees/DeleteEmployee',
+                    type: 'POST',
+                    data: { id: employeeId },
+                    success: function (result) {
+                        row.remove();
+                    },
+                    error: function (xhr, status, error) {
+                        alert("Error deleting employee: " + error);
                     }
                 });
             });
