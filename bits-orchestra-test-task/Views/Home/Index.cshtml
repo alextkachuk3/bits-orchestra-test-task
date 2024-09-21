@@ -7,7 +7,7 @@
 
     <hr class="hr my-3" />
 
-    <form action="/upload" method="post" enctype="multipart/form-data">
+    <form asp-controller="Employees" asp-action="Upload" method="post" enctype="multipart/form-data">
         <div class="form-group">
             <label for="file">Select File:</label>
             <input type="file" name="file" id="file" class="form-control" accept=".csv" required />
