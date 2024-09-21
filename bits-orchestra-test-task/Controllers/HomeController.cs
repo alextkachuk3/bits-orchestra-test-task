@@ -1,19 +1,15 @@
 using bits_orchestra_test_task.Models;
+using bits_orchestra_test_task.Services;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
 using System.Globalization;
-using System.Text;
 
 namespace bits_orchestra_test_task.Controllers
 {
-    public class HomeController : Controller
+    public class HomeController(ILogger<HomeController> logger, IEmployeeService employeeService) : Controller
     {
-        private readonly ILogger<HomeController> _logger;
-
-        public HomeController(ILogger<HomeController> logger)
-        {
-            _logger = logger;
-        }
+        private readonly ILogger<HomeController> _logger = logger;
+        private readonly IEmployeeService _employeeService = employeeService;
 
         public IActionResult Index()
         {
@@ -23,36 +19,36 @@ namespace bits_orchestra_test_task.Controllers
         [HttpPost("upload")]
         public async Task<IActionResult> Upload(IFormFile file)
         {
-            if (file == null || file.Length == 0)
+            var employees = new List<Employee>();
+
+            using var stream = new StreamReader(file.OpenReadStream());
+            string? headerLine = stream.ReadLine();
+            if (headerLine == null)
             {
-                return BadRequest("No file uploaded");
+                return BadRequest("CSV file is empty or invalid.");
             }
+            var headers = headerLine.Split(',');
 
-            using (var reader = new StreamReader(file.OpenReadStream(), Encoding.UTF8))
+            while (!stream.EndOfStream)
             {
-                bool skipHeader = true;
+                var line = stream.ReadLine()!;
+                var values = line.Split(',');
 
-                while (!reader.EndOfStream)
+                if (values.Length == headers.Length)
                 {
-                    var line = await reader.ReadLineAsync();
-
-                    if (skipHeader)
+                    var employee = new Employee
                     {
-                        skipHeader = false;
-                        continue;
-                    }
-
-                    var values = line.Split(',');
-
-                    var name = values[0];
-                    var dob = DateTime.Parse(values[1], CultureInfo.InvariantCulture);
-                    var married = bool.Parse(values[2]);
-                    var phone = values[3];
-                    var salary = decimal.Parse(values[4]);
-
-                    Console.WriteLine($"Name: {name}, Date of Birth: {dob.ToShortDateString()}, Married: {married}, Phone: {phone}, Salary: {salary}");
+                        Name = values[0],
+                        DateOfBirth = DateTime.Parse(values[1], CultureInfo.InvariantCulture),
+                        IsMarried = bool.Parse(values[2]),
+                        Phone = values[3],
+                        Salary = decimal.Parse(values[4])
+                    };
+                    employees.Add(employee);
                 }
             }
+
+            await _employeeService.AddEmployeesAsync(employees);
 
             return Redirect("/");
         }
