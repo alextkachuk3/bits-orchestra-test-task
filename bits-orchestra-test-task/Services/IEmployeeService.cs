@@ -5,8 +5,9 @@ namespace bits_orchestra_test_task.Services
 {
     public interface IEmployeeService
     {
+        Employee? GetEmployeeById(int id);
         public Task AddEmployeesAsync(IEnumerable<Employee> employees);
-
-        public List<Employee> GetAllEmployees();
+        Task UpdateEmployeeAsync(Employee employee);
+        public List<Employee> GetAllEmployees();        
     }
 }

@@ -27,19 +27,19 @@
                     {
                         <tr class="paginate-show">
                             <td class="col-2">
-                                @employee.Name
+                                <input type="text" class="form-control" id="employeeName-@employee.Id" data-id="@employee.Id" value="@employee.Name" />
                             </td>
                             <td class="col-2">
-                                @employee.DateOfBirth
+                                <input type="date" class="form-control" id="employeeDOB-@employee.Id" data-id="@employee.Id" value="@employee.DateOfBirth.ToString("yyyy-MM-dd")" />
+                            </td>
+                            <td class="col-1">
+                                <input class="form-check-input" type="checkbox" id="employeeIsMarried-@employee.Id" data-id="@employee.Id" @(employee.IsMarried ? "checked" : "") />
                             </td>
                             <td class="col-2">
-                                <input class="form-check-input" type="checkbox" checked="@employee.IsMarried" id="employeeIsMaried-@employee.Id">
+                                <input type="text" class="form-control" id="employeePhone-@employee.Id" data-id="@employee.Id" value="@employee.Phone" />
                             </td>
                             <td class="col-2">
-                                @employee.Phone
-                            </td>
-                            <td class="col-2">
-                                @employee.Salary
+                                <input type="number" class="form-control" id="employeeSalary-@employee.Id" data-id="@employee.Id" value="@employee.Salary" />
                             </td>
                         </tr>
                     }
@@ -48,3 +48,39 @@
         </div>
     }
 </div>
+
+@section Scripts {   
+    <script>
+        $(document).ready(function () {
+            $('input').on('change', function () {
+                let employeeId = $(this).data('id');
+
+                let updatedName = $('#employeeName-' + employeeId).val();
+                let updatedDOB = $('#employeeDOB-' + employeeId).val();
+                let updatedIsMarried = $('#employeeIsMarried-' + employeeId).is(':checked');
+                let updatedPhone = $('#employeePhone-' + employeeId).val();
+                let updatedSalary = $('#employeeSalary-' + employeeId).val();
+
+                $.ajax({
+                    url: '/Employees/UpdateEmployee',
+                    method: 'POST',
+                    data: {
+                        id: employeeId,
+                        name: updatedName,
+                        dateOfBirth: updatedDOB,
+                        isMarried: updatedIsMarried,
+                        phone: updatedPhone,
+                        salary: updatedSalary
+                    },
+                    success: function (response) {
+                        console.log('Employee updated successfully.');
+                    },
+                    error: function (xhr, status, error) {
+                        console.error('Error occurred: ' + error);
+                        alert('Error updating employee.');
+                    }
+                });
+            });
+        });
+    </script>
+}

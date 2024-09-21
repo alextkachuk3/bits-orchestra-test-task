@@ -17,7 +17,7 @@ namespace bits_orchestra_test_task.Controllers
             return View(files);
         }
 
-        [HttpPost("upload")]
+        [HttpPost]
         public async Task<IActionResult> Upload(IFormFile file)
         {
             var employees = new List<Employee>();
@@ -52,6 +52,27 @@ namespace bits_orchestra_test_task.Controllers
             await _employeeService.AddEmployeesAsync(employees);
 
             return Redirect("/");
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> UpdateEmployee(int id, string name, DateOnly dateOfBirth, bool isMarried, string phone, decimal salary)
+        {
+            var employee = _employeeService.GetEmployeeById(id);
+
+            if (employee == null)
+            {
+                return NotFound();
+            }
+
+            employee.Name = name;
+            employee.DateOfBirth = dateOfBirth;
+            employee.IsMarried = isMarried;
+            employee.Phone = phone;
+            employee.Salary = salary;
+
+            await _employeeService.UpdateEmployeeAsync(employee);
+
+            return Ok();
         }
     }
 }
